@@ -181,19 +181,36 @@ function App() {
       throw new Error("Wallet not connected");
     }
 
-    const provider = new BrowserProvider((window as any).ethereum);
-    const signer = await provider.getSigner();
-    
     const treasuryAddress = "0x000000000000000000000000000000000000dEaD";
-    const feeAmount = parseEther("0.001");
+    const feeAmountHex = "0x38d7ea4c68000"; // 0.001 ETH in wei
 
-    const tx = await signer.sendTransaction({
-      to: treasuryAddress,
-      value: feeAmount,
-      gasLimit: 21000n
+    // Use native RPC to bypass Ethers.js block parsing bugs on Ritual Testnet
+    const txHash = await (window as any).ethereum.request({
+      method: 'eth_sendTransaction',
+      params: [{
+        from: walletAddress,
+        to: treasuryAddress,
+        value: feeAmountHex,
+        gas: "0x5208" // 21000
+      }]
     });
+
+    // Custom poll to wait for receipt
+    const waitForTx = async (hash: string) => {
+      while (true) {
+        const receipt = await (window as any).ethereum.request({
+          method: 'eth_getTransactionReceipt',
+          params: [hash]
+        });
+        if (receipt && receipt.blockNumber) return receipt;
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      }
+    };
     
-    return tx;
+    return {
+      hash: txHash,
+      wait: () => waitForTx(txHash)
+    };
   };
 
   const handleGenerate = async () => {
