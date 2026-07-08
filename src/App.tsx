@@ -18,6 +18,8 @@ interface TokenIdea {
   name: string;
   ticker: string;
   marketCap: string;
+  volume: string;
+  trustScore: number;
   change: string;
   icon: string;
   color: string;
@@ -31,10 +33,10 @@ interface UserProfile {
 }
 
 const trendingTokens: TokenIdea[] = [
-  { id: '1', name: 'Neural Doge', ticker: '$NDOGE', marketCap: '$1.2M', change: '+142%', icon: '🐕', color: '#fef08a' },
-  { id: '2', name: 'Sentient Cat', ticker: '$SCAT', marketCap: '$840K', change: '+85%', icon: '🐱', color: '#fbcfe8' },
-  { id: '3', name: 'Quantum Frog', ticker: '$QFROG', marketCap: '$2.1M', change: '+320%', icon: '🐸', color: '#bbf7d0' },
-  { id: '4', name: 'AI Penguin', ticker: '$PENG', marketCap: '$450K', change: '+42%', icon: '🐧', color: '#bae6fd' },
+  { id: '1', name: 'Neural Doge', ticker: '$NDOGE', marketCap: '$1.2M', volume: '$340K', trustScore: 92, change: '+142%', icon: '🐕', color: '#fef08a' },
+  { id: '2', name: 'Sentient Cat', ticker: '$SCAT', marketCap: '$840K', volume: '$120K', trustScore: 88, change: '+85%', icon: '🐱', color: '#fbcfe8' },
+  { id: '3', name: 'Quantum Frog', ticker: '$QFROG', marketCap: '$2.1M', volume: '$950K', trustScore: 95, change: '+320%', icon: '🐸', color: '#bbf7d0' },
+  { id: '4', name: 'AI Penguin', ticker: '$PENG', marketCap: '$450K', volume: '$65K', trustScore: 78, change: '+42%', icon: '🐧', color: '#bae6fd' },
 ];
 
 function App() {
@@ -46,6 +48,7 @@ function App() {
   const [walletBalance, setWalletBalance] = useState<string | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
+  const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
 
   const [selectedToken, setSelectedToken] = useState<TokenIdea | null>(null);
   const [isTrading, setIsTrading] = useState(false);
@@ -307,6 +310,8 @@ function App() {
           name: prompt.substring(0, 15) + (prompt.length > 15 ? '...' : '') + ' Agent',
           ticker: prompt.substring(0, 4).toUpperCase(),
           marketCap: "$1.0K",
+          volume: "$0",
+          trustScore: 99,
           change: "+0.00%",
           icon: "🚀",
           color: "rgba(59, 130, 246, 0.2)"
@@ -619,7 +624,7 @@ function App() {
           <h2 className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <Flame size={24} color="#f97316" /> Trending AI Launches
           </h2>
-          <span style={{ color: 'var(--brand-primary)', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+          <span style={{ color: 'var(--brand-primary)', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center' }} onClick={() => setIsLeaderboardOpen(true)}>
             View all <ArrowRight size={16} style={{ marginLeft: '4px' }}/>
           </span>
         </div>
@@ -829,6 +834,60 @@ function App() {
             >
               Disconnect Wallet
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Leaderboard Modal */}
+      {isLeaderboardOpen && (
+        <div className="modal-overlay" onClick={() => setIsLeaderboardOpen(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '800px', width: '90%' }}>
+            <button className="modal-close" onClick={() => setIsLeaderboardOpen(false)}>
+              <X size={24} />
+            </button>
+            <h2 style={{ fontSize: '1.5rem', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <Flame size={24} color="#f97316" /> Top Agents Leaderboard
+            </h2>
+            
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                <thead>
+                  <tr style={{ borderBottom: '1px solid var(--border-light)', color: 'var(--text-secondary)' }}>
+                    <th style={{ padding: '12px', fontWeight: 500 }}>Agent</th>
+                    <th style={{ padding: '12px', fontWeight: 500 }}>Market Cap</th>
+                    <th style={{ padding: '12px', fontWeight: 500 }}>Volume (24h)</th>
+                    <th style={{ padding: '12px', fontWeight: 500 }}>Trust Score</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[...myTokens, ...trendingTokens].sort((a, b) => b.trustScore - a.trustScore).map((token) => (
+                    <tr key={token.id} style={{ borderBottom: '1px solid var(--border-light)' }}>
+                      <td style={{ padding: '16px 12px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: token.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>
+                          {token.icon}
+                        </div>
+                        <div>
+                          <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{token.name}</div>
+                          <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{token.ticker}</div>
+                        </div>
+                      </td>
+                      <td style={{ padding: '16px 12px', fontWeight: 600 }}>{token.marketCap}</td>
+                      <td style={{ padding: '16px 12px', color: 'var(--text-secondary)' }}>{token.volume}</td>
+                      <td style={{ padding: '16px 12px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <div style={{ flex: 1, height: '6px', background: 'var(--border-light)', borderRadius: '4px', overflow: 'hidden' }}>
+                            <div style={{ width: `${token.trustScore}%`, height: '100%', backgroundColor: token.trustScore >= 90 ? '#10b981' : token.trustScore >= 75 ? '#f59e0b' : '#ef4444' }}></div>
+                          </div>
+                          <span style={{ fontSize: '0.9rem', fontWeight: 600, color: token.trustScore >= 90 ? '#10b981' : token.trustScore >= 75 ? '#f59e0b' : '#ef4444' }}>
+                            {token.trustScore}/100
+                          </span>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}
