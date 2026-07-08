@@ -426,7 +426,7 @@ function App() {
         </h1>
         
         <p className="hero-desc">
-          Describe your vision. Our on-chain AI will generate the mascot, write the secure smart contract, and launch the liquidity pool. <br/> <span style={{fontSize: '0.9rem', color: 'var(--brand-accent)', fontWeight: 600}}>Fee: 0.001 RITUAL per launch</span>
+          Describe your vision. Our on-chain AI will generate the mascot, write the secure smart contract, and launch the liquidity pool.
         </p>
 
         <div className="creator-box">
