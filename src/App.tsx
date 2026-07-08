@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { BrowserProvider, parseEther, formatEther } from 'ethers';
-import { Sparkles, ArrowRight, Loader2, CheckCircle2, Hexagon, Flame, ArrowUpRight, Cpu, X, ShieldCheck, Zap, LockKeyhole, Moon, Sun, User } from 'lucide-react';
+import { Sparkles, ArrowRight, Loader2, CheckCircle2, Hexagon, Flame, ArrowUpRight, Cpu, X, ShieldCheck, Zap, LockKeyhole, Moon, Sun, User, Edit2, Save } from 'lucide-react';
 import './index.css';
 
 const SocialIcons = () => (
@@ -739,11 +739,13 @@ function App() {
               <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div className="trade-title">Your Profile</div>
-                  <button onClick={() => setIsEditingProfile(!isEditingProfile)} style={{ background: 'none', border: 'none', color: 'var(--brand-primary)', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 600 }}>
-                    {isEditingProfile ? 'Done' : 'Edit'}
-                  </button>
+                  {!isEditingProfile && (
+                    <button onClick={() => setIsEditingProfile(true)} style={{ background: 'none', border: 'none', color: 'var(--brand-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.9rem', fontWeight: 600 }}>
+                      <Edit2 size={14} /> Edit
+                    </button>
+                  )}
                 </div>
-                <div className="trade-ticker" style={{ fontSize: '0.9rem', wordBreak: 'break-all' }}>{walletAddress}</div>
+                <div className="trade-ticker" style={{ fontSize: '0.9rem', wordBreak: 'break-all' }}>{truncateWallet(walletAddress)}</div>
                 {!isEditingProfile && (userProfile.twitter || userProfile.telegram || userProfile.github) && (
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '8px' }}>
                     {userProfile.twitter && <span style={{ color: 'var(--brand-primary)', fontSize: '0.85rem' }}>𝕏 {userProfile.twitter}</span>}
@@ -755,23 +757,30 @@ function App() {
             </div>
 
             {isEditingProfile && (
-              <div style={{ background: 'var(--surface-color)', padding: '16px', borderRadius: '12px', marginBottom: '24px', border: '1px solid var(--border-light)' }}>
-                <div style={{ marginBottom: '12px' }}>
-                  <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>Avatar Image URL</label>
-                  <input type="text" value={userProfile.avatarUrl} onChange={e => setUserProfile({...userProfile, avatarUrl: e.target.value})} style={{ width: '100%', background: 'transparent', border: '1px solid var(--border-light)', color: 'var(--text-primary)', padding: '8px', borderRadius: '6px' }} placeholder="https://..." />
+              <div style={{ background: 'var(--surface-color)', padding: '20px', borderRadius: '12px', marginBottom: '24px', border: '1px solid var(--border-light)' }}>
+                <div style={{ marginBottom: '16px' }}>
+                  <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '8px' }}>Avatar Image URL</label>
+                  <input type="text" value={userProfile.avatarUrl} onChange={e => setUserProfile({...userProfile, avatarUrl: e.target.value})} style={{ width: '100%', background: 'transparent', border: '1px solid var(--border-light)', color: 'var(--text-primary)', padding: '12px', borderRadius: '8px', fontSize: '1rem', outline: 'none', transition: 'border-color 0.3s' }} placeholder="https://..." onFocus={e => e.target.style.borderColor = 'var(--brand-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-light)'} />
                 </div>
-                <div style={{ marginBottom: '12px' }}>
-                  <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>X (Twitter) Handle</label>
-                  <input type="text" value={userProfile.twitter} onChange={e => setUserProfile({...userProfile, twitter: e.target.value})} style={{ width: '100%', background: 'transparent', border: '1px solid var(--border-light)', color: 'var(--text-primary)', padding: '8px', borderRadius: '6px' }} placeholder="@username" />
+                <div style={{ marginBottom: '16px' }}>
+                  <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '8px' }}>X (Twitter) Handle</label>
+                  <input type="text" value={userProfile.twitter} onChange={e => setUserProfile({...userProfile, twitter: e.target.value})} style={{ width: '100%', background: 'transparent', border: '1px solid var(--border-light)', color: 'var(--text-primary)', padding: '12px', borderRadius: '8px', fontSize: '1rem', outline: 'none', transition: 'border-color 0.3s' }} placeholder="@username" onFocus={e => e.target.style.borderColor = 'var(--brand-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-light)'} />
                 </div>
-                <div style={{ marginBottom: '12px' }}>
-                  <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>Telegram Handle</label>
-                  <input type="text" value={userProfile.telegram} onChange={e => setUserProfile({...userProfile, telegram: e.target.value})} style={{ width: '100%', background: 'transparent', border: '1px solid var(--border-light)', color: 'var(--text-primary)', padding: '8px', borderRadius: '6px' }} placeholder="@username" />
+                <div style={{ marginBottom: '16px' }}>
+                  <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '8px' }}>Telegram Handle</label>
+                  <input type="text" value={userProfile.telegram} onChange={e => setUserProfile({...userProfile, telegram: e.target.value})} style={{ width: '100%', background: 'transparent', border: '1px solid var(--border-light)', color: 'var(--text-primary)', padding: '12px', borderRadius: '8px', fontSize: '1rem', outline: 'none', transition: 'border-color 0.3s' }} placeholder="@username" onFocus={e => e.target.style.borderColor = 'var(--brand-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-light)'} />
                 </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>Github Username</label>
-                  <input type="text" value={userProfile.github} onChange={e => setUserProfile({...userProfile, github: e.target.value})} style={{ width: '100%', background: 'transparent', border: '1px solid var(--border-light)', color: 'var(--text-primary)', padding: '8px', borderRadius: '6px' }} placeholder="username" />
+                <div style={{ marginBottom: '16px' }}>
+                  <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '8px' }}>Github Username</label>
+                  <input type="text" value={userProfile.github} onChange={e => setUserProfile({...userProfile, github: e.target.value})} style={{ width: '100%', background: 'transparent', border: '1px solid var(--border-light)', color: 'var(--text-primary)', padding: '12px', borderRadius: '8px', fontSize: '1rem', outline: 'none', transition: 'border-color 0.3s' }} placeholder="username" onFocus={e => e.target.style.borderColor = 'var(--brand-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-light)'} />
                 </div>
+                <button 
+                  className="btn-primary" 
+                  style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px' }}
+                  onClick={() => setIsEditingProfile(false)}
+                >
+                  <Save size={18} /> Save Profile
+                </button>
               </div>
             )}
 
