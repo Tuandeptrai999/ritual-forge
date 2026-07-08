@@ -1,32 +1,47 @@
-# React + TypeScript + Vite
+# Ritual Forge - AI Launchpad
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+![Ritual Forge Banner](public/premium_logo.jpg)
 
-Currently, two official plugins are available:
+**Ritual Forge** is a next-generation, institutional-grade AI Token Launchpad built on the Ritual chain. It provides seamless decentralized crowdfunding, fair launch mechanics, and AI agent tokenization with an unparalleled user experience.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+🔗 **Live Demo:** [https://ritual-forge-six.vercel.app/](https://ritual-forge-six.vercel.app/)
 
-## React Compiler
+## ✨ Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- 🌌 **Immersive UI/UX:** Built with React, Vite, and cutting-edge CSS animations, offering a stunning Dark/Light mode, custom fluid cursor, and spotlight interactive effects.
+- 🦊 **Web3 Integration:** Full MetaMask wallet integration via `ethers.js`, automatically supporting seamless network switching to the Ritual Testnet.
+- 🤖 **AI-Powered Agent Generation:** Users can define their token concept and generate complete AI agent behaviors and tokenomics in seconds.
+- 💧 **Fair Launch Mechanics:** Designed to prevent bot manipulation and ensure fair token distribution for all participants.
+- ⚡ **Institutional Grade:** Real-time analytics, trending token leaderboards, and secure architecture for peace of mind.
 
-## Expanding the Oxlint configuration
+## 🛠️ Tech Stack
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+- **Frontend:** React 18, TypeScript, Vite
+- **Styling:** Vanilla CSS3 with dynamic variables and CSS modules
+- **Web3:** ethers.js v6
+- **Icons:** Lucide React
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+## 🚀 Getting Started
+
+To run this project locally, simply clone the repository and install the dependencies:
+
+```bash
+git clone https://github.com/Tuandeptrai999/ritual-forge.git
+cd ritual-forge
+npm install
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+The application will start on `http://localhost:5173`.
+
+## 🌐 Smart Contracts & Network
+
+This dApp is configured to run on the **Ritual Testnet**.
+When connecting your wallet, the dApp will prompt you to automatically add and switch to the Ritual Testnet network:
+- **Chain ID:** `1979`
+- **RPC URL:** `https://rpc.ritualfoundation.org`
+- **Currency:** `RITUAL`
+
+## 📄 License
+
+This project is open-source and available under the MIT License.
