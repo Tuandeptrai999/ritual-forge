@@ -450,7 +450,8 @@ function App() {
           
           <div className="creator-box launch-form" style={{ flex: '1 1 500px', textAlign: 'left', padding: '32px', background: 'var(--surface-color)', borderRadius: '24px', border: '1px solid var(--border-light)' }}>
             <h3 style={{ marginBottom: '24px', fontSize: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Rocket size={24} color="var(--brand-primary)" /> Launch AI Token
+              <Rocket size={24} color="var(--brand-primary)" style={{ flexShrink: 0 }} />
+              <span style={{ lineHeight: 1.2, textWrap: 'balance' }}>Launch AI Token</span>
             </h3>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
