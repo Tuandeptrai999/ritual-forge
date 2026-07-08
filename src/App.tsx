@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { BrowserProvider } from 'ethers';
+import { BrowserProvider, parseEther } from 'ethers';
 import { Sparkles, ArrowRight, Loader2, CheckCircle2, Hexagon, Flame, ArrowUpRight, Cpu, X, ShieldCheck, Zap, LockKeyhole, Moon, Sun } from 'lucide-react';
 import './index.css';
 
@@ -40,6 +40,7 @@ function App() {
 
   const [selectedToken, setSelectedToken] = useState<TokenIdea | null>(null);
   const [isTrading, setIsTrading] = useState(false);
+  const [tradeAmount, setTradeAmount] = useState<string>('100');
 
   // Custom Cursor State
   const [isHoveringClickable, setIsHoveringClickable] = useState(false);
@@ -194,7 +195,7 @@ function App() {
     }
   };
 
-  const executeFeeTransaction = async (description: string) => {
+  const executeFeeTransaction = async (description: string, valueInEth: string = "0.001") => {
     if (!walletAddress) {
       alert(`Please connect your wallet first to pay the ${description} fee!`);
       connectWallet();
@@ -202,7 +203,14 @@ function App() {
     }
 
     const treasuryAddress = "0x000000000000000000000000000000000000dEaD";
-    const feeAmountHex = "0x38d7ea4c68000"; // 0.001 ETH in wei
+    
+    let feeAmountHex = "0x38d7ea4c68000"; // Default 0.001 ETH
+    try {
+      const valWei = parseEther(valueInEth || "0.001");
+      feeAmountHex = "0x" + valWei.toString(16);
+    } catch(e) {
+      console.error(e);
+    }
 
     // Use native RPC to bypass Ethers.js block parsing bugs on Ritual Testnet
     const txHash = await (window as any).ethereum.request({
@@ -281,17 +289,23 @@ function App() {
 
   const handleTrade = async (type: 'buy' | 'sell') => {
     if (!selectedToken) return;
+    if (!tradeAmount || isNaN(Number(tradeAmount)) || Number(tradeAmount) <= 0) {
+      alert("Please enter a valid amount to trade.");
+      return;
+    }
 
     try {
       setIsTrading(true);
-      const tx = await executeFeeTransaction("trading");
+      // For buys, we send the trade amount. For sells, we just charge the 0.001 base network fee for the mockup
+      const txValue = type === 'buy' ? tradeAmount : "0.001";
+      const tx = await executeFeeTransaction(`trading`, txValue);
       
       alert(`Waiting for ${type.toUpperCase()} transaction to confirm...`);
       await tx.wait();
       
       setIsTrading(false);
       setSelectedToken(null);
-      alert(`Successfully ${type === 'buy' ? 'bought' : 'sold'} ${selectedToken.ticker}! Paid 0.001 RITUAL network fee.\nTx: ${tx.hash}`);
+      alert(`Successfully ${type === 'buy' ? 'bought' : 'sold'} ${selectedToken.ticker}! Transaction completed.\nTx: ${tx.hash}`);
       
     } catch (error: any) {
       setIsTrading(false);
@@ -602,9 +616,25 @@ function App() {
               </div>
             </div>
 
-            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: '8px' }}>
+            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: '24px' }}>
               Execute a trade on the Ritual EVM++ network. Smart contracts will automatically route your liquidity.
             </p>
+
+            <div className="trade-input-group" style={{ marginBottom: '24px' }}>
+              <label style={{ display: 'block', color: 'var(--text-secondary)', marginBottom: '8px', fontSize: '0.9rem', fontWeight: 600 }}>Amount to Trade</label>
+              <div style={{ display: 'flex', alignItems: 'center', background: 'var(--surface-color)', border: '1px solid var(--border-light)', borderRadius: '12px', padding: '12px 16px', transition: 'border-color 0.3s' }}>
+                <input 
+                  type="number" 
+                  value={tradeAmount} 
+                  onChange={(e) => setTradeAmount(e.target.value)} 
+                  placeholder="0.0" 
+                  min="0"
+                  step="0.1"
+                  style={{ flex: 1, background: 'transparent', border: 'none', color: 'var(--text-primary)', fontSize: '1.25rem', outline: 'none', fontWeight: 600 }}
+                />
+                <span style={{ color: 'var(--brand-primary)', fontWeight: 700 }}>RITUAL</span>
+              </div>
+            </div>
 
             <div className="trade-actions">
               <button 
