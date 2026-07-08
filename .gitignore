@@ -29,3 +29,9 @@ contracts/.env
 # Frontend secrets
 .env
 .env.local
+
+# Contract dependencies
+contracts/node_modules/
+contracts/cache/
+contracts/artifacts/
+dist/
