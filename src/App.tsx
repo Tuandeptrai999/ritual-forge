@@ -82,6 +82,8 @@ function App() {
     return saved ? JSON.parse(saved) : [];
   });
 
+  const [globalTokens, setGlobalTokens] = useState<TokenIdea[]>([]);
+
   const [tokenBalances, setTokenBalances] = useState<Record<string, number>>(() => {
     const saved = localStorage.getItem('ritual_token_balances');
     return saved ? JSON.parse(saved) : {};
@@ -221,7 +223,7 @@ function App() {
                });
             }
             
-            setMyTokens(prev => {
+            setGlobalTokens(prev => {
               // Merge, avoiding duplicates
               const map = new Map(prev.map(p => [p.id, p]));
               fetchedTokens.forEach(t => map.set(t.id, t));
@@ -248,7 +250,7 @@ function App() {
           creator: creatorShort
         };
 
-        setMyTokens(prev => {
+        setGlobalTokens(prev => {
           if (prev.some(t => t.id === newToken.id)) return prev;
           return [newToken, ...prev];
         });
@@ -435,7 +437,21 @@ function App() {
         setTimeout(() => {
           setStep(7);
           setIsGenerating(false);
-          // Wait for on-chain event to update the UI
+          
+          const newToken: TokenIdea = {
+            id: txHash, // fallback ID for local until we reload
+            name: agentName,
+            ticker: ticker.toUpperCase(),
+            marketCap: initialMarketCap,
+            volume: "$0",
+            trustScore: 99,
+            change: "+0.00%",
+            icon: "🚀",
+            color: "rgba(59, 130, 246, 0.2)",
+            creator: creatorShort
+          };
+          setMyTokens([newToken, ...myTokens]);
+
           alert(`✅ Token Deployed On-Chain!\n\nAgent: ${agentName} (${ticker.toUpperCase()})\nTx: ${txHash}\n\nView on Explorer:\nhttps://explorer.ritualfoundation.org/tx/${txHash}`);
           setAgentName('');
           setTicker('');
@@ -1079,7 +1095,7 @@ function App() {
                   </tr>
                 </thead>
                 <tbody>
-                  {[...myTokens, ...trendingTokens].sort((a, b) => b.trustScore - a.trustScore).map((token) => (
+                  {[...globalTokens, ...trendingTokens].sort((a, b) => b.trustScore - a.trustScore).map((token) => (
                     <tr key={token.id} style={{ borderBottom: '1px solid var(--border-light)' }}>
                       <td style={{ padding: '16px 12px', display: 'flex', alignItems: 'center', gap: '12px' }}>
                         <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: token.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>
