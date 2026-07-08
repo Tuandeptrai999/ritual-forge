@@ -480,7 +480,7 @@ function App() {
                 </div>
                 <div style={{ flex: '1 1 200px' }}>
                   <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, color: 'var(--text-secondary)' }}>Raise Goal</label>
-                  <input type="text" className="creator-input" placeholder="E.g., 50 ETH" value={raiseGoal} onChange={(e) => setRaiseGoal(e.target.value)} disabled={isGenerating} style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-light)', background: 'var(--bg-color)', color: 'var(--text-primary)' }} />
+                  <input type="text" className="creator-input" placeholder="E.g., 50 RIT" value={raiseGoal} onChange={(e) => setRaiseGoal(e.target.value)} disabled={isGenerating} style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-light)', background: 'var(--bg-color)', color: 'var(--text-primary)' }} />
                 </div>
               </div>
 
