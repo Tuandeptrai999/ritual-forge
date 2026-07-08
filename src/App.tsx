@@ -23,6 +23,13 @@ interface TokenIdea {
   color: string;
 }
 
+interface UserProfile {
+  avatarUrl: string;
+  twitter: string;
+  telegram: string;
+  github: string;
+}
+
 const trendingTokens: TokenIdea[] = [
   { id: '1', name: 'Neural Doge', ticker: '$NDOGE', marketCap: '$1.2M', change: '+142%', icon: '🐕', color: '#fef08a' },
   { id: '2', name: 'Sentient Cat', ticker: '$SCAT', marketCap: '$840K', change: '+85%', icon: '🐱', color: '#fbcfe8' },
@@ -61,6 +68,12 @@ function App() {
     return saved ? JSON.parse(saved) : {};
   });
 
+  const [userProfile, setUserProfile] = useState<UserProfile>(() => {
+    const saved = localStorage.getItem('ritual_user_profile');
+    return saved ? JSON.parse(saved) : { avatarUrl: '', twitter: '', telegram: '', github: '' };
+  });
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+
   useEffect(() => {
     localStorage.setItem('ritual_my_tokens', JSON.stringify(myTokens));
   }, [myTokens]);
@@ -68,6 +81,10 @@ function App() {
   useEffect(() => {
     localStorage.setItem('ritual_token_balances', JSON.stringify(tokenBalances));
   }, [tokenBalances]);
+
+  useEffect(() => {
+    localStorage.setItem('ritual_user_profile', JSON.stringify(userProfile));
+  }, [userProfile]);
 
   useEffect(() => {
     if (isDarkMode) {
@@ -391,7 +408,7 @@ function App() {
           <button className="btn-primary" onClick={handleWalletClick} disabled={isConnecting} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             {isConnecting ? 'Connecting...' : walletAddress ? (
               <>
-                <User size={16} /> 
+                {userProfile.avatarUrl ? <img src={userProfile.avatarUrl} alt="Avatar" style={{ width: 16, height: 16, borderRadius: '50%', objectFit: 'cover' }} /> : <User size={16} />}
                 {walletBalance ? Number(walletBalance).toFixed(4) + ' RITUAL • ' : ''}
                 {truncateWallet(walletAddress)}
               </>
@@ -716,15 +733,48 @@ function App() {
               <X size={24} />
             </button>
             
-            <div className="trade-header" style={{ marginBottom: '24px' }}>
-              <div className="trade-avatar" style={{ backgroundColor: 'var(--brand-primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <User size={32} />
+            <div className="trade-header" style={{ marginBottom: '24px', alignItems: 'flex-start' }}>
+              <div className="trade-avatar" style={{ backgroundColor: 'var(--brand-primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                {userProfile.avatarUrl ? <img src={userProfile.avatarUrl} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <User size={32} />}
               </div>
-              <div>
-                <div className="trade-title">Your Profile</div>
+              <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div className="trade-title">Your Profile</div>
+                  <button onClick={() => setIsEditingProfile(!isEditingProfile)} style={{ background: 'none', border: 'none', color: 'var(--brand-primary)', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 600 }}>
+                    {isEditingProfile ? 'Done' : 'Edit'}
+                  </button>
+                </div>
                 <div className="trade-ticker" style={{ fontSize: '0.9rem', wordBreak: 'break-all' }}>{walletAddress}</div>
+                {!isEditingProfile && (userProfile.twitter || userProfile.telegram || userProfile.github) && (
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '8px' }}>
+                    {userProfile.twitter && <span style={{ color: 'var(--brand-primary)', fontSize: '0.85rem' }}>𝕏 {userProfile.twitter}</span>}
+                    {userProfile.telegram && <span style={{ color: '#0088cc', fontSize: '0.85rem' }}>TG: {userProfile.telegram}</span>}
+                    {userProfile.github && <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>GH: {userProfile.github}</span>}
+                  </div>
+                )}
               </div>
             </div>
+
+            {isEditingProfile && (
+              <div style={{ background: 'var(--surface-color)', padding: '16px', borderRadius: '12px', marginBottom: '24px', border: '1px solid var(--border-light)' }}>
+                <div style={{ marginBottom: '12px' }}>
+                  <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>Avatar Image URL</label>
+                  <input type="text" value={userProfile.avatarUrl} onChange={e => setUserProfile({...userProfile, avatarUrl: e.target.value})} style={{ width: '100%', background: 'transparent', border: '1px solid var(--border-light)', color: 'var(--text-primary)', padding: '8px', borderRadius: '6px' }} placeholder="https://..." />
+                </div>
+                <div style={{ marginBottom: '12px' }}>
+                  <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>X (Twitter) Handle</label>
+                  <input type="text" value={userProfile.twitter} onChange={e => setUserProfile({...userProfile, twitter: e.target.value})} style={{ width: '100%', background: 'transparent', border: '1px solid var(--border-light)', color: 'var(--text-primary)', padding: '8px', borderRadius: '6px' }} placeholder="@username" />
+                </div>
+                <div style={{ marginBottom: '12px' }}>
+                  <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>Telegram Handle</label>
+                  <input type="text" value={userProfile.telegram} onChange={e => setUserProfile({...userProfile, telegram: e.target.value})} style={{ width: '100%', background: 'transparent', border: '1px solid var(--border-light)', color: 'var(--text-primary)', padding: '8px', borderRadius: '6px' }} placeholder="@username" />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>Github Username</label>
+                  <input type="text" value={userProfile.github} onChange={e => setUserProfile({...userProfile, github: e.target.value})} style={{ width: '100%', background: 'transparent', border: '1px solid var(--border-light)', color: 'var(--text-primary)', padding: '8px', borderRadius: '6px' }} placeholder="username" />
+                </div>
+              </div>
+            )}
 
             <div style={{ background: 'var(--surface-color)', padding: '16px', borderRadius: '12px', marginBottom: '24px', border: '1px solid var(--border-light)' }}>
               <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '8px' }}>RITUAL Balance</div>
