@@ -1,7 +1,16 @@
 import { useState, useEffect, useRef } from 'react';
-import { BrowserProvider, parseEther, formatEther } from 'ethers';
+import { BrowserProvider, parseEther, formatEther, Contract } from 'ethers';
 import { Sparkles, ArrowRight, Loader2, CheckCircle2, Hexagon, Flame, ArrowUpRight, Cpu, X, ShieldCheck, Zap, LockKeyhole, User, Edit2, Save, Upload, Rocket } from 'lucide-react';
 import './index.css';
+
+// RitualForgeFactory ABI (minimal — only launchAgent)
+const FACTORY_ABI = [
+  "function launchAgent(string calldata _name, string calldata _ticker, string calldata _prompt, string calldata _marketCap) external payable returns (address)",
+  "event AgentLaunched(address indexed tokenAddress, address indexed creator, string name, string ticker, uint256 indexed agentIndex, uint256 timestamp)"
+];
+
+const FACTORY_ADDRESS = import.meta.env.VITE_FACTORY_ADDRESS || null;
+const LAUNCH_FEE = parseEther("0.001"); // 0.001 RITUAL
 
 const SocialIcons = () => (
   <div className="social-icons" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginRight: '8px' }}>
@@ -298,46 +307,99 @@ function App() {
       alert("Please fill in the required fields (Name, Ticker, Prompt)");
       return;
     }
+
+    if (!walletAddress) {
+      alert("Please connect your MetaMask wallet first.");
+      return;
+    }
     
     try {
       setIsGenerating(true);
-      setStep(1); 
+      setStep(1);
 
-      const tx = await executeFeeTransaction("launch");
-      
-      setStep(2); 
-      await tx.wait(); 
+      const creatorShort = `${walletAddress.substring(0, 6)}...${walletAddress.substring(walletAddress.length - 4)}`;
+      let txHash = "";
 
-      setStep(3); 
-      setTimeout(() => setStep(4), 1500); 
-      setTimeout(() => setStep(5), 3000); 
-      setTimeout(() => setStep(6), 4500); 
-      setTimeout(() => {
-        setStep(7);
-        setIsGenerating(false);
-        const creatorAddr = walletAddress
-          ? `${walletAddress.substring(0, 6)}...${walletAddress.substring(walletAddress.length - 4)}`
-          : 'Anonymous';
-        const newToken: TokenIdea = {
-          id: Date.now().toString(),
-          name: agentName,
-          ticker: ticker.toUpperCase(),
-          marketCap: initialMarketCap,
-          volume: "$0",
-          trustScore: 99,
-          change: "+0.00%",
-          icon: "🚀",
-          color: "rgba(59, 130, 246, 0.2)",
-          creator: creatorAddr
-        };
-        setMyTokens([newToken, ...myTokens]);
-        alert(`Token Deployed Successfully! Paid 0.001 RITUAL fee.\nTransaction Hash: ${tx.hash}`);
-        setAgentName('');
-        setTicker('');
-        setPromptModel('');
-        setRaiseGoal('');
-        setStep(0);
-      }, 6000);
+      if (FACTORY_ADDRESS) {
+        // ========== REAL ON-CHAIN MODE ==========
+        const provider = new BrowserProvider((window as any).ethereum);
+        const signer = await provider.getSigner();
+        const factory = new Contract(FACTORY_ADDRESS, FACTORY_ABI, signer);
+
+        setStep(2);
+        const tx = await factory.launchAgent(
+          agentName,
+          ticker.toUpperCase(),
+          promptModel,
+          initialMarketCap,
+          { value: LAUNCH_FEE }
+        );
+        txHash = tx.hash;
+
+        setStep(3);
+        await tx.wait();
+
+        setStep(4);
+        setTimeout(() => setStep(5), 1000);
+        setTimeout(() => setStep(6), 2000);
+        setTimeout(() => {
+          setStep(7);
+          setIsGenerating(false);
+          const newToken: TokenIdea = {
+            id: Date.now().toString(),
+            name: agentName,
+            ticker: ticker.toUpperCase(),
+            marketCap: initialMarketCap,
+            volume: "$0",
+            trustScore: 99,
+            change: "+0.00%",
+            icon: "🚀",
+            color: "rgba(59, 130, 246, 0.2)",
+            creator: creatorShort
+          };
+          setMyTokens([newToken, ...myTokens]);
+          alert(`✅ Token Deployed On-Chain!\n\nAgent: ${agentName} (${ticker.toUpperCase()})\nTx: ${txHash}\n\nView on Explorer:\nhttps://explorer.ritualfoundation.org/tx/${txHash}`);
+          setAgentName('');
+          setTicker('');
+          setPromptModel('');
+          setRaiseGoal('');
+          setStep(0);
+        }, 3000);
+
+      } else {
+        // ========== SIMULATION MODE (no contract deployed yet) ==========
+        const tx = await executeFeeTransaction("launch");
+        txHash = tx.hash;
+        setStep(2);
+        await tx.wait();
+        setStep(3);
+        setTimeout(() => setStep(4), 1500);
+        setTimeout(() => setStep(5), 3000);
+        setTimeout(() => setStep(6), 4500);
+        setTimeout(() => {
+          setStep(7);
+          setIsGenerating(false);
+          const newToken: TokenIdea = {
+            id: Date.now().toString(),
+            name: agentName,
+            ticker: ticker.toUpperCase(),
+            marketCap: initialMarketCap,
+            volume: "$0",
+            trustScore: 99,
+            change: "+0.00%",
+            icon: "🚀",
+            color: "rgba(59, 130, 246, 0.2)",
+            creator: creatorShort
+          };
+          setMyTokens([newToken, ...myTokens]);
+          alert(`Token Simulated Successfully!\nTransaction Hash: ${txHash}\n\n(Simulation mode — set VITE_FACTORY_ADDRESS in .env to go live)`);
+          setAgentName('');
+          setTicker('');
+          setPromptModel('');
+          setRaiseGoal('');
+          setStep(0);
+        }, 6000);
+      }
 
     } catch (error: any) {
       console.error(error);

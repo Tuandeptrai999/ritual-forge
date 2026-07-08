@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Contract secrets
+contracts/.env
+
+# Frontend secrets
+.env
+.env.local
