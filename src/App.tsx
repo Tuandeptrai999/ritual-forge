@@ -37,6 +37,9 @@ function App() {
   // Theme State
   const [isDarkMode, setIsDarkMode] = useState(false);
 
+  // User's Launched Tokens
+  const [myTokens, setMyTokens] = useState<TokenIdea[]>([]);
+
   useEffect(() => {
     if (isDarkMode) {
       document.body.classList.add('dark');
@@ -231,6 +234,17 @@ function App() {
       setTimeout(() => {
         setStep(6);
         setIsGenerating(false);
+        const newToken: TokenIdea = {
+          id: Date.now(),
+          name: prompt.substring(0, 15) + (prompt.length > 15 ? '...' : '') + ' Agent',
+          ticker: prompt.substring(0, 4).toUpperCase(),
+          price: "0.001",
+          marketCap: "$1.0K",
+          change: "+0.00%",
+          icon: "🚀",
+          color: "rgba(59, 130, 246, 0.2)"
+        };
+        setMyTokens([newToken, ...myTokens]);
         alert(`Token Deployed Successfully! Paid 0.001 RITUAL fee.\nTransaction Hash: ${tx.hash}`);
         setPrompt('');
         setStep(0);
@@ -457,6 +471,49 @@ function App() {
           </div>
         </div>
       </section>
+
+      {myTokens.length > 0 && (
+        <section id="my-tokens" className="trending" style={{ paddingBottom: '20px', borderBottom: 'none' }}>
+          <div className="trending-header">
+            <h2 className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <span style={{ width: '14px', height: '14px', backgroundColor: '#10b981', borderRadius: '50%', boxShadow: '0 0 15px #10b981' }}></span> 
+              Your Live Agents
+            </h2>
+          </div>
+
+          <div className="token-grid">
+            {myTokens.map(token => (
+              <div key={token.id} className="token-card interactive-card" onClick={() => setSelectedToken(token)}>
+                <div className="card-content-wrap">
+                  <div className="token-header">
+                    <div className="token-avatar" style={{ backgroundColor: token.color }}>
+                      {token.icon}
+                    </div>
+                    <div>
+                      <div className="token-name">{token.name}</div>
+                      <div className="token-ticker">{token.ticker}</div>
+                    </div>
+                    <div style={{ marginLeft: 'auto' }}>
+                      <ArrowUpRight size={20} color="var(--text-secondary)" />
+                    </div>
+                  </div>
+                  
+                  <div className="token-stats">
+                    <div className="stat-item">
+                      <span className="stat-label">Market Cap</span>
+                      <span className="stat-val">{token.marketCap}</span>
+                    </div>
+                    <div className="stat-item" style={{ textAlign: 'right' }}>
+                      <span className="stat-label">24h Change</span>
+                      <span className="stat-val val-up">{token.change}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section id="explore" className="trending">
         <div className="trending-header">
