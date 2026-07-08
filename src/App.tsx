@@ -38,7 +38,14 @@ function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   // User's Launched Tokens
-  const [myTokens, setMyTokens] = useState<TokenIdea[]>([]);
+  const [myTokens, setMyTokens] = useState<TokenIdea[]>(() => {
+    const saved = localStorage.getItem('ritual_my_tokens');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('ritual_my_tokens', JSON.stringify(myTokens));
+  }, [myTokens]);
 
   useEffect(() => {
     if (isDarkMode) {
@@ -472,15 +479,19 @@ function App() {
         </div>
       </section>
 
-      {myTokens.length > 0 && (
-        <section id="my-tokens" className="trending" style={{ paddingBottom: '20px', borderBottom: 'none' }}>
-          <div className="trending-header">
-            <h2 className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <span style={{ width: '14px', height: '14px', backgroundColor: '#10b981', borderRadius: '50%', boxShadow: '0 0 15px #10b981' }}></span> 
-              Your Live Agents
-            </h2>
-          </div>
+      <section id="my-tokens" className="trending" style={{ paddingBottom: '20px', borderBottom: 'none' }}>
+        <div className="trending-header">
+          <h2 className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <span style={{ width: '14px', height: '14px', backgroundColor: '#10b981', borderRadius: '50%', boxShadow: '0 0 15px #10b981' }}></span> 
+            Your Live Agents
+          </h2>
+        </div>
 
+        {myTokens.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)', background: 'var(--surface-color)', borderRadius: '24px', border: '1px dashed var(--border-light)' }}>
+            No tokens launched yet. Enter a concept above to forge your first AI agent!
+          </div>
+        ) : (
           <div className="token-grid">
             {myTokens.map(token => (
               <div key={token.id} className="token-card interactive-card" onClick={() => setSelectedToken(token)}>
@@ -512,8 +523,8 @@ function App() {
               </div>
             ))}
           </div>
-        </section>
-      )}
+        )}
+      </section>
 
       <section id="explore" className="trending">
         <div className="trending-header">
