@@ -497,27 +497,27 @@ function App() {
               <div className="generator-status" style={{ marginTop: '24px', textAlign: 'left', background: 'var(--bg-color)', padding: '16px', borderRadius: '12px', border: '1px solid var(--border-light)' }}>
                 <div className={`status-step ${step >= 1 ? (step > 1 ? 'done' : 'active') : ''}`}>
                   {step > 1 ? <CheckCircle2 size={18} /> : (step === 1 ? <Loader2 size={18} className="spin" /> : <div style={{width: 18}}/>)}
-                  1. Deploy AI Agent lên Ritual Testnet.
+                  1. Deploying AI Agent to Ritual Testnet...
                 </div>
                 <div className={`status-step ${step >= 2 ? (step > 2 ? 'done' : 'active') : ''}`}>
                   {step > 2 ? <CheckCircle2 size={18} /> : (step === 2 ? <Loader2 size={18} className="spin" /> : <div style={{width: 18}}/>)}
-                  2. Mint token theo tokenomics chuẩn.
+                  2. Minting token via standard tokenomics...
                 </div>
                 <div className={`status-step ${step >= 3 ? (step > 3 ? 'done' : 'active') : ''}`}>
                   {step > 3 ? <CheckCircle2 size={18} /> : (step === 3 ? <Loader2 size={18} className="spin" /> : <div style={{width: 18}}/>)}
-                  3. Khóa phần token của creator theo vesting.
+                  3. Locking creator tokens in vesting contract...
                 </div>
                 <div className={`status-step ${step >= 4 ? (step > 4 ? 'done' : 'active') : ''}`}>
                   {step > 4 ? <CheckCircle2 size={18} /> : (step === 4 ? <Loader2 size={18} className="spin" /> : <div style={{width: 18}}/>)}
-                  4. Thêm thanh khoản sau khi hoàn tất presale.
+                  4. Adding liquidity for post-presale...
                 </div>
                 <div className={`status-step ${step >= 5 ? (step > 5 ? 'done' : 'active') : ''}`}>
                   {step > 5 ? <CheckCircle2 size={18} /> : (step === 5 ? <Loader2 size={18} className="spin" /> : <div style={{width: 18}}/>)}
-                  5. Khóa LP.
+                  5. Locking Liquidity Pool (LP)...
                 </div>
                 <div className={`status-step ${step >= 6 ? (step > 6 ? 'done' : 'active') : ''}`}>
                   {step > 6 ? <CheckCircle2 size={18} /> : (step === 6 ? <Loader2 size={18} className="spin" /> : <div style={{width: 18}}/>)}
-                  6. Cho phép người dùng claim token.
+                  6. Enabling user token claims...
                 </div>
               </div>
             )}
@@ -525,27 +525,27 @@ function App() {
 
           <div className="tokenomics-info" style={{ flex: '1 1 300px', textAlign: 'left', padding: '32px', background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05))', borderRadius: '24px', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
             <h3 style={{ marginBottom: '24px', fontSize: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--brand-primary)' }}>
-              <ShieldCheck size={24} /> Chuẩn AI Token trên Ritual
+              <ShieldCheck size={24} /> Standard AI Token on Ritual
             </h3>
             <p style={{ color: 'var(--text-secondary)', marginBottom: '24px', lineHeight: 1.6 }}>
-              Thay vì mỗi AI Agent có một tokenomics khác nhau, mọi agent đều tuân theo một chuẩn chung nhằm bảo vệ người dùng và xây dựng một hệ sinh thái bền vững.
+              Instead of each AI Agent having different tokenomics, every agent follows a universal standard to protect users and build a sustainable ecosystem.
             </p>
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <li style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
                 <CheckCircle2 size={20} color="var(--brand-primary)" style={{ flexShrink: 0, marginTop: '2px' }} />
-                <span>Người dùng biết trước creator không thể giữ quá nhiều token.</span>
+                <span>Users know upfront that the creator cannot hold too many tokens.</span>
               </li>
               <li style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
                 <CheckCircle2 size={20} color="var(--brand-primary)" style={{ flexShrink: 0, marginTop: '2px' }} />
-                <span>AI Agent nào cũng có mức thanh khoản tối thiểu.</span>
+                <span>Every AI Agent has a minimum guaranteed liquidity.</span>
               </li>
               <li style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
                 <CheckCircle2 size={20} color="var(--brand-primary)" style={{ flexShrink: 0, marginTop: '2px' }} />
-                <span>Giảm rủi ro "rug pull" do LP đã bị khóa tự động.</span>
+                <span>Reduced "rug pull" risk with automatically locked LP.</span>
               </li>
               <li style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
                 <CheckCircle2 size={20} color="var(--brand-primary)" style={{ flexShrink: 0, marginTop: '2px' }} />
-                <span>Dễ so sánh và đánh giá giữa các AI Agent nhờ tính nhất quán.</span>
+                <span>Easier comparison and evaluation between AI Agents due to consistency.</span>
               </li>
             </ul>
           </div>
