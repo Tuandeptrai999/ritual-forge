@@ -1,26 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
-  --bg-color: #ffffff;
-  --surface-color: #f8fafc;
-  --surface-color-hover: #f1f5f9;
-  
-  --text-primary: #0f172a;
-  --text-secondary: #64748b;
-  
-  --border-light: #e2e8f0;
-  
-  --brand-primary: #3b82f6; /* Blue */
-  --brand-secondary: #8b5cf6; /* Purple */
-  --brand-accent: #ec4899; /* Pink */
-  
-  --navbar-bg: rgba(255, 255, 255, 0.8);
-  
-  --font-main: 'Plus Jakarta Sans', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
-}
-
-body.dark {
   --bg-color: #0f172a;
   --surface-color: #1e293b;
   --surface-color-hover: #334155;
@@ -30,7 +10,14 @@ body.dark {
   
   --border-light: #334155;
   
+  --brand-primary: #3b82f6; /* Blue */
+  --brand-secondary: #8b5cf6; /* Purple */
+  --brand-accent: #ec4899; /* Pink */
+  
   --navbar-bg: rgba(15, 23, 42, 0.8);
+  
+  --font-main: 'Plus Jakarta Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
 }
 
 * {

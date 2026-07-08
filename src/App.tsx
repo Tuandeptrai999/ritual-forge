@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { BrowserProvider, parseEther, formatEther } from 'ethers';
-import { Sparkles, ArrowRight, Loader2, CheckCircle2, Hexagon, Flame, ArrowUpRight, Cpu, X, ShieldCheck, Zap, LockKeyhole, Moon, Sun, User, Edit2, Save, Upload } from 'lucide-react';
+import { Sparkles, ArrowRight, Loader2, CheckCircle2, Hexagon, Flame, ArrowUpRight, Cpu, X, ShieldCheck, Zap, LockKeyhole, User, Edit2, Save, Upload } from 'lucide-react';
 import './index.css';
 
 const SocialIcons = () => (
@@ -54,9 +54,6 @@ function App() {
 
   // Custom Cursor State
   const [isHoveringClickable, setIsHoveringClickable] = useState(false);
-  
-  // Theme State
-  const [isDarkMode, setIsDarkMode] = useState(false);
 
   const [myTokens, setMyTokens] = useState<TokenIdea[]>(() => {
     const saved = localStorage.getItem('ritual_my_tokens');
@@ -101,14 +98,6 @@ function App() {
     }
   };
 
-  useEffect(() => {
-    if (isDarkMode) {
-      document.body.classList.add('dark');
-    } else {
-      document.body.classList.remove('dark');
-    }
-  }, [isDarkMode]);
-  
   // Smooth Follower Refs
   const followerRef = useRef<HTMLDivElement>(null);
   const followerPos = useRef({ x: -100, y: -100 });
@@ -418,13 +407,6 @@ function App() {
         </div>
         <div className="nav-actions" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <SocialIcons />
-          <button 
-            className="theme-toggle" 
-            onClick={() => setIsDarkMode(!isDarkMode)}
-            title="Toggle Theme"
-          >
-            {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
-          </button>
           <button className="btn-primary" onClick={handleWalletClick} disabled={isConnecting} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             {isConnecting ? 'Connecting...' : walletAddress ? (
               <>
