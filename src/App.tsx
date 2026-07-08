@@ -40,6 +40,7 @@ function App() {
 
   const [selectedToken, setSelectedToken] = useState<TokenIdea | null>(null);
   const [isTrading, setIsTrading] = useState(false);
+  const [tradingAction, setTradingAction] = useState<'buy' | 'sell' | null>(null);
   const [tradeAmount, setTradeAmount] = useState<string>('100');
 
   // Custom Cursor State
@@ -296,6 +297,7 @@ function App() {
 
     try {
       setIsTrading(true);
+      setTradingAction(type);
       // For buys, we send the trade amount. For sells, we just charge the 0.001 base network fee for the mockup
       const txValue = type === 'buy' ? tradeAmount : "0.001";
       const tx = await executeFeeTransaction(`trading`, txValue);
@@ -304,11 +306,13 @@ function App() {
       await tx.wait();
       
       setIsTrading(false);
+      setTradingAction(null);
       setSelectedToken(null);
       alert(`Successfully ${type === 'buy' ? 'bought' : 'sold'} ${selectedToken.ticker}! Transaction completed.\nTx: ${tx.hash}`);
       
     } catch (error: any) {
       setIsTrading(false);
+      setTradingAction(null);
       if (error.code === 4001 || error.message?.includes('User denied') || error.message?.includes('rejected')) {
         alert("Trade cancelled. You must pay the 0.001 RITUAL fee to trade tokens.");
       } else if (error.message !== "Wallet not connected") {
@@ -642,14 +646,14 @@ function App() {
                 onClick={() => handleTrade('buy')}
                 disabled={isTrading}
               >
-                {isTrading ? <Loader2 size={20} className="spin" style={{margin: '0 auto'}}/> : 'Buy Token'}
+                {isTrading && tradingAction === 'buy' ? <Loader2 size={20} className="spin" style={{margin: '0 auto'}}/> : 'Buy Token'}
               </button>
               <button 
                 className="btn-trade btn-sell" 
                 onClick={() => handleTrade('sell')}
                 disabled={isTrading}
               >
-                {isTrading ? <Loader2 size={20} className="spin" style={{margin: '0 auto'}}/> : 'Sell Token'}
+                {isTrading && tradingAction === 'sell' ? <Loader2 size={20} className="spin" style={{margin: '0 auto'}}/> : 'Sell Token'}
               </button>
             </div>
 
