@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { BrowserProvider, parseEther } from 'ethers';
-import { Sparkles, ArrowRight, Loader2, CheckCircle2, Hexagon, Flame, ArrowUpRight, Cpu, X, ShieldCheck, Zap, LockKeyhole } from 'lucide-react';
+import { Sparkles, ArrowRight, Loader2, CheckCircle2, Hexagon, Flame, ArrowUpRight, Cpu, X, ShieldCheck, Zap, LockKeyhole, Moon, Sun } from 'lucide-react';
 import './index.css';
 
 interface TokenIdea {
@@ -33,6 +33,17 @@ function App() {
 
   // Custom Cursor State
   const [isHoveringClickable, setIsHoveringClickable] = useState(false);
+  
+  // Theme State
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.body.classList.add('dark');
+    } else {
+      document.body.classList.remove('dark');
+    }
+  }, [isDarkMode]);
   
   // Smooth Follower Refs
   const followerRef = useRef<HTMLDivElement>(null);
@@ -155,6 +166,14 @@ function App() {
     }
   };
 
+  const handleWalletClick = () => {
+    if (walletAddress) {
+      setWalletAddress(null);
+    } else {
+      connectWallet();
+    }
+  };
+
   const executeFeeTransaction = async (description: string) => {
     if (!walletAddress) {
       alert(`Please connect your wallet first to pay the ${description} fee!`);
@@ -249,22 +268,23 @@ function App() {
       />
 
       <nav className="navbar">
-        <div className="nav-brand">
-          <Hexagon size={24} fill="url(#brand-grad)" color="transparent" />
-          <svg width="0" height="0">
-            <linearGradient id="brand-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop stopColor="var(--brand-primary)" offset="0%" />
-              <stop stopColor="var(--brand-secondary)" offset="100%" />
-            </linearGradient>
-          </svg>
+        <div className="nav-brand" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+          <Hexagon size={28} fill="var(--brand-primary)" color="transparent" />
           Ritual Forge
         </div>
         <div className="nav-links">
-          <span>Explore</span>
-          <span>Features</span>
-          <span>Roadmap</span>
+          <span onClick={() => document.getElementById('explore')?.scrollIntoView({ behavior: 'smooth' })}>Explore</span>
+          <span onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}>Features</span>
+          <span onClick={() => document.getElementById('roadmap')?.scrollIntoView({ behavior: 'smooth' })}>Roadmap</span>
+          <button 
+            className="theme-toggle" 
+            onClick={() => setIsDarkMode(!isDarkMode)}
+            title="Toggle Theme"
+          >
+            {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+          </button>
         </div>
-        <button className="btn-primary" onClick={connectWallet} disabled={isConnecting}>
+        <button className="btn-primary" onClick={handleWalletClick} disabled={isConnecting}>
           {isConnecting ? 'Connecting...' : walletAddress ? truncateWallet(walletAddress) : 'Connect Wallet'}
         </button>
       </nav>
@@ -339,7 +359,7 @@ function App() {
       </div>
 
       {/* Features Section */}
-      <section className="features-section">
+      <section id="features" className="features-section">
         <div className="section-header">
           <div className="section-badge">Why Ritual Forge?</div>
           <h2 className="section-title">Institutional Grade AI Launchpad</h2>
@@ -370,7 +390,7 @@ function App() {
       </section>
 
       {/* Roadmap Section */}
-      <section className="roadmap-section">
+      <section id="roadmap" className="roadmap-section">
         <div className="section-header">
           <div className="section-badge" style={{color: 'var(--brand-accent)'}}>The Future</div>
           <h2 className="section-title" style={{color: 'white'}}>Development Roadmap</h2>
@@ -420,7 +440,7 @@ function App() {
         </div>
       </section>
 
-      <section className="trending">
+      <section id="explore" className="trending">
         <div className="trending-header">
           <h2 className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <Flame size={24} color="#f97316" /> Trending AI Launches
