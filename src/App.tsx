@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { BrowserProvider, parseEther } from 'ethers';
+import { BrowserProvider } from 'ethers';
 import { Sparkles, ArrowRight, Loader2, CheckCircle2, Hexagon, Flame, ArrowUpRight, Cpu, X, ShieldCheck, Zap, LockKeyhole, Moon, Sun } from 'lucide-react';
 import './index.css';
 
@@ -242,10 +242,9 @@ function App() {
         setStep(6);
         setIsGenerating(false);
         const newToken: TokenIdea = {
-          id: Date.now(),
+          id: Date.now().toString(),
           name: prompt.substring(0, 15) + (prompt.length > 15 ? '...' : '') + ' Agent',
           ticker: prompt.substring(0, 4).toUpperCase(),
-          price: "0.001",
           marketCap: "$1.0K",
           change: "+0.00%",
           icon: "🚀",
