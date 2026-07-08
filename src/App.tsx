@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { BrowserProvider, parseEther, formatEther } from 'ethers';
-import { Sparkles, ArrowRight, Loader2, CheckCircle2, Hexagon, Flame, ArrowUpRight, Cpu, X, ShieldCheck, Zap, LockKeyhole, Moon, Sun, User, Edit2, Save } from 'lucide-react';
+import { Sparkles, ArrowRight, Loader2, CheckCircle2, Hexagon, Flame, ArrowUpRight, Cpu, X, ShieldCheck, Zap, LockKeyhole, Moon, Sun, User, Edit2, Save, Upload } from 'lucide-react';
 import './index.css';
 
 const SocialIcons = () => (
@@ -85,6 +85,21 @@ function App() {
   useEffect(() => {
     localStorage.setItem('ritual_user_profile', JSON.stringify(userProfile));
   }, [userProfile]);
+
+  const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert("Image is too large. Please select an image under 5MB.");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setUserProfile(prev => ({ ...prev, avatarUrl: event.target?.result as string }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   useEffect(() => {
     if (isDarkMode) {
@@ -759,8 +774,14 @@ function App() {
             {isEditingProfile && (
               <div style={{ background: 'var(--surface-color)', padding: '20px', borderRadius: '12px', marginBottom: '24px', border: '1px solid var(--border-light)' }}>
                 <div style={{ marginBottom: '16px' }}>
-                  <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '8px' }}>Avatar Image URL</label>
-                  <input type="text" value={userProfile.avatarUrl} onChange={e => setUserProfile({...userProfile, avatarUrl: e.target.value})} style={{ width: '100%', background: 'transparent', border: '1px solid var(--border-light)', color: 'var(--text-primary)', padding: '12px', borderRadius: '8px', fontSize: '1rem', outline: 'none', transition: 'border-color 0.3s' }} placeholder="https://..." onFocus={e => e.target.style.borderColor = 'var(--brand-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-light)'} />
+                  <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '8px' }}>Avatar Image (URL or Upload)</label>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <input type="text" value={userProfile.avatarUrl} onChange={e => setUserProfile({...userProfile, avatarUrl: e.target.value})} style={{ flex: 1, background: 'transparent', border: '1px solid var(--border-light)', color: 'var(--text-primary)', padding: '12px', borderRadius: '8px', fontSize: '1rem', outline: 'none', transition: 'border-color 0.3s' }} placeholder="https://..." onFocus={e => e.target.style.borderColor = 'var(--brand-primary)'} onBlur={e => e.target.style.borderColor = 'var(--border-light)'} />
+                    <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--surface-color)', border: '1px solid var(--border-light)', padding: '0 16px', borderRadius: '8px', cursor: 'pointer', color: 'var(--text-primary)', transition: 'background 0.3s' }}>
+                      <Upload size={18} />
+                      <input type="file" accept="image/*" onChange={handleAvatarUpload} style={{ display: 'none' }} />
+                    </label>
+                  </div>
                 </div>
                 <div style={{ marginBottom: '16px' }}>
                   <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '8px' }}>X (Twitter) Handle</label>
