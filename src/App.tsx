@@ -49,15 +49,23 @@ function App() {
   // Theme State
   const [isDarkMode, setIsDarkMode] = useState(false);
 
-  // User's Launched Tokens
   const [myTokens, setMyTokens] = useState<TokenIdea[]>(() => {
     const saved = localStorage.getItem('ritual_my_tokens');
     return saved ? JSON.parse(saved) : [];
   });
 
+  const [tokenBalances, setTokenBalances] = useState<Record<string, number>>(() => {
+    const saved = localStorage.getItem('ritual_token_balances');
+    return saved ? JSON.parse(saved) : {};
+  });
+
   useEffect(() => {
     localStorage.setItem('ritual_my_tokens', JSON.stringify(myTokens));
   }, [myTokens]);
+
+  useEffect(() => {
+    localStorage.setItem('ritual_token_balances', JSON.stringify(tokenBalances));
+  }, [tokenBalances]);
 
   useEffect(() => {
     if (isDarkMode) {
@@ -295,6 +303,15 @@ function App() {
       return;
     }
 
+    const amountNum = Number(tradeAmount);
+    if (type === 'sell') {
+      const currentBalance = tokenBalances[selectedToken.id] || 0;
+      if (amountNum > currentBalance) {
+        alert(`Insufficient balance. You only have ${currentBalance} ${selectedToken.ticker}.`);
+        return;
+      }
+    }
+
     try {
       setIsTrading(true);
       setTradingAction(type);
@@ -305,6 +322,14 @@ function App() {
       alert(`Waiting for ${type.toUpperCase()} transaction to confirm...`);
       await tx.wait();
       
+      setTokenBalances(prev => {
+        const current = prev[selectedToken.id] || 0;
+        return {
+          ...prev,
+          [selectedToken.id]: type === 'buy' ? current + amountNum : current - amountNum
+        };
+      });
+
       setIsTrading(false);
       setTradingAction(null);
       setSelectedToken(null);
@@ -625,7 +650,12 @@ function App() {
             </p>
 
             <div className="trade-input-group" style={{ marginBottom: '24px' }}>
-              <label style={{ display: 'block', color: 'var(--text-secondary)', marginBottom: '8px', fontSize: '0.9rem', fontWeight: 600 }}>Amount to Trade</label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <label style={{ display: 'block', color: 'var(--text-secondary)', fontSize: '0.9rem', fontWeight: 600 }}>Amount to Trade</label>
+                <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                  Balance: <strong style={{ color: 'var(--text-primary)' }}>{tokenBalances[selectedToken.id] || 0} {selectedToken.ticker}</strong>
+                </span>
+              </div>
               <div style={{ display: 'flex', alignItems: 'center', background: 'var(--surface-color)', border: '1px solid var(--border-light)', borderRadius: '12px', padding: '12px 16px', transition: 'border-color 0.3s' }}>
                 <input 
                   type="number" 
