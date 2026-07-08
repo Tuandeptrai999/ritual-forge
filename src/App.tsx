@@ -231,7 +231,7 @@ function App() {
       setTimeout(() => {
         setStep(6);
         setIsGenerating(false);
-        alert(`Token Deployed Successfully! Paid 0.001 RITUAL fee.\\nTransaction Hash: ${tx.hash}`);
+        alert(`Token Deployed Successfully! Paid 0.001 RITUAL fee.\nTransaction Hash: ${tx.hash}`);
         setPrompt('');
         setStep(0);
       }, 6000);
@@ -261,7 +261,7 @@ function App() {
       
       setIsTrading(false);
       setSelectedToken(null);
-      alert(`Successfully ${type === 'buy' ? 'bought' : 'sold'} ${selectedToken.ticker}! Paid 0.001 RITUAL network fee.\\nTx: ${tx.hash}`);
+      alert(`Successfully ${type === 'buy' ? 'bought' : 'sold'} ${selectedToken.ticker}! Paid 0.001 RITUAL network fee.\nTx: ${tx.hash}`);
       
     } catch (error: any) {
       setIsTrading(false);
