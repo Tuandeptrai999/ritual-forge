@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { BrowserProvider, parseEther, formatEther } from 'ethers';
-import { Sparkles, ArrowRight, Loader2, CheckCircle2, Hexagon, Flame, ArrowUpRight, Cpu, X, ShieldCheck, Zap, LockKeyhole, User, Edit2, Save, Upload } from 'lucide-react';
+import { Sparkles, ArrowRight, Loader2, CheckCircle2, Hexagon, Flame, ArrowUpRight, Cpu, X, ShieldCheck, Zap, LockKeyhole, User, Edit2, Save, Upload, Rocket } from 'lucide-react';
 import './index.css';
 
 const SocialIcons = () => (
@@ -40,7 +40,12 @@ const trendingTokens: TokenIdea[] = [
 ];
 
 function App() {
-  const [prompt, setPrompt] = useState('');
+  const [agentName, setAgentName] = useState('');
+  const [ticker, setTicker] = useState('');
+  const [promptModel, setPromptModel] = useState('');
+  const [initialMarketCap, setInitialMarketCap] = useState('$10k');
+  const [raiseGoal, setRaiseGoal] = useState('');
+  
   const [isGenerating, setIsGenerating] = useState(false);
   const [step, setStep] = useState(0);
   
@@ -288,7 +293,10 @@ function App() {
   };
 
   const handleGenerate = async () => {
-    if (!prompt.trim()) return;
+    if (!agentName.trim() || !ticker.trim() || !promptModel.trim()) {
+      alert("Please fill in the required fields (Name, Ticker, Prompt)");
+      return;
+    }
     
     try {
       setIsGenerating(true);
@@ -300,16 +308,17 @@ function App() {
       await tx.wait(); 
 
       setStep(3); 
-      setTimeout(() => setStep(4), 2000); 
-      setTimeout(() => setStep(5), 4000); 
+      setTimeout(() => setStep(4), 1500); 
+      setTimeout(() => setStep(5), 3000); 
+      setTimeout(() => setStep(6), 4500); 
       setTimeout(() => {
-        setStep(6);
+        setStep(7);
         setIsGenerating(false);
         const newToken: TokenIdea = {
           id: Date.now().toString(),
-          name: prompt.substring(0, 15) + (prompt.length > 15 ? '...' : '') + ' Agent',
-          ticker: prompt.substring(0, 4).toUpperCase(),
-          marketCap: "$1.0K",
+          name: agentName,
+          ticker: ticker.toUpperCase(),
+          marketCap: initialMarketCap,
           volume: "$0",
           trustScore: 99,
           change: "+0.00%",
@@ -318,7 +327,10 @@ function App() {
         };
         setMyTokens([newToken, ...myTokens]);
         alert(`Token Deployed Successfully! Paid 0.001 RITUAL fee.\nTransaction Hash: ${tx.hash}`);
-        setPrompt('');
+        setAgentName('');
+        setTicker('');
+        setPromptModel('');
+        setRaiseGoal('');
         setStep(0);
       }, 6000);
 
@@ -434,52 +446,110 @@ function App() {
           Describe your vision. Our on-chain AI will generate the mascot, write the secure smart contract, and launch the liquidity pool.
         </p>
 
-        <div className="creator-box">
-          <input 
-            type="text" 
-            className="creator-input"
-            placeholder="E.g., A cyberpunk samurai cat token..."
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            disabled={isGenerating}
-          />
-          <button 
-            className="btn-generate bg-gradient" 
-            onClick={handleGenerate}
-            disabled={!prompt.trim() || isGenerating}
-          >
-            {isGenerating ? (
-              <>Working <Loader2 size={18} className="spin" /></>
-            ) : (
-              <>Launch <Sparkles size={18} /></>
-            )}
-          </button>
-        </div>
+        <div className="launch-section-container" style={{ display: 'flex', gap: '32px', marginTop: '40px', flexWrap: 'wrap' }}>
+          
+          <div className="creator-box launch-form" style={{ flex: '1 1 500px', textAlign: 'left', padding: '32px', background: 'var(--surface-color)', borderRadius: '24px', border: '1px solid var(--border-light)' }}>
+            <h3 style={{ marginBottom: '24px', fontSize: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Rocket size={24} color="var(--brand-primary)" /> Launch AI Token
+            </h3>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, color: 'var(--text-secondary)' }}>AI Agent Name *</label>
+                <input type="text" className="creator-input" placeholder="E.g., Cyberpunk Samurai" value={agentName} onChange={(e) => setAgentName(e.target.value)} disabled={isGenerating} style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-light)', background: 'var(--bg-color)', color: 'var(--text-primary)' }} />
+              </div>
 
-        {step > 0 && (
-          <div className="generator-status">
-            <div className={`status-step ${step >= 1 ? (step > 1 ? 'done' : 'active') : ''}`}>
-              {step > 1 ? <CheckCircle2 size={18} /> : (step === 1 ? <Loader2 size={18} className="spin" /> : <div style={{width: 18}}/>)}
-              1. Awaiting MetaMask Signature (Fee: 0.001 RITUAL)...
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, color: 'var(--text-secondary)' }}>Ticker *</label>
+                <input type="text" className="creator-input" placeholder="E.g., $CYBER" value={ticker} onChange={(e) => setTicker(e.target.value)} disabled={isGenerating} style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-light)', background: 'var(--bg-color)', color: 'var(--text-primary)' }} />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, color: 'var(--text-secondary)' }}>Prompt / Model *</label>
+                <textarea className="creator-input" placeholder="Describe the AI's personality and instructions..." value={promptModel} onChange={(e) => setPromptModel(e.target.value)} disabled={isGenerating} rows={3} style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-light)', background: 'var(--bg-color)', color: 'var(--text-primary)', resize: 'vertical' }}></textarea>
+              </div>
+
+              <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                <div style={{ flex: '1 1 200px' }}>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, color: 'var(--text-secondary)' }}>Initial Market Cap</label>
+                  <select className="creator-input" value={initialMarketCap} onChange={(e) => setInitialMarketCap(e.target.value)} disabled={isGenerating} style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-light)', background: 'var(--bg-color)', color: 'var(--text-primary)' }}>
+                    <option value="$5k">$5k</option>
+                    <option value="$10k">$10k</option>
+                    <option value="$25k">$25k</option>
+                  </select>
+                </div>
+                <div style={{ flex: '1 1 200px' }}>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600, color: 'var(--text-secondary)' }}>Raise Goal</label>
+                  <input type="text" className="creator-input" placeholder="E.g., 50 ETH" value={raiseGoal} onChange={(e) => setRaiseGoal(e.target.value)} disabled={isGenerating} style={{ width: '100%', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-light)', background: 'var(--bg-color)', color: 'var(--text-primary)' }} />
+                </div>
+              </div>
+
+              <button className="btn-generate bg-gradient" onClick={handleGenerate} disabled={!agentName.trim() || !ticker.trim() || !promptModel.trim() || isGenerating} style={{ marginTop: '16px', width: '100%', justifyContent: 'center' }}>
+                {isGenerating ? (
+                  <>Working <Loader2 size={18} className="spin" /></>
+                ) : (
+                  <>Launch <Sparkles size={18} /></>
+                )}
+              </button>
             </div>
-            <div className={`status-step ${step >= 2 ? (step > 2 ? 'done' : 'active') : ''}`}>
-              {step > 2 ? <CheckCircle2 size={18} /> : (step === 2 ? <Loader2 size={18} className="spin" /> : <div style={{width: 18}}/>)}
-              2. Confirming payment on Ritual Chain...
-            </div>
-            <div className={`status-step ${step >= 3 ? (step > 3 ? 'done' : 'active') : ''}`}>
-              {step > 3 ? <CheckCircle2 size={18} /> : (step === 3 ? <Loader2 size={18} className="spin" /> : <div style={{width: 18}}/>)}
-              3. AI generating tokenomics & mascot artwork...
-            </div>
-            <div className={`status-step ${step >= 4 ? (step > 4 ? 'done' : 'active') : ''}`}>
-              {step > 4 ? <CheckCircle2 size={18} /> : (step === 4 ? <Loader2 size={18} className="spin" /> : <div style={{width: 18}}/>)}
-              4. AI compiling Solidity smart contract in TEE...
-            </div>
-            <div className={`status-step ${step >= 5 ? (step > 5 ? 'done' : 'active') : ''}`}>
-              {step > 5 ? <CheckCircle2 size={18} /> : (step === 5 ? <Loader2 size={18} className="spin" /> : <div style={{width: 18}}/>)}
-              5. Deploying token to Ritual & adding Liquidity...
-            </div>
+            
+            {step > 0 && (
+              <div className="generator-status" style={{ marginTop: '24px', textAlign: 'left', background: 'var(--bg-color)', padding: '16px', borderRadius: '12px', border: '1px solid var(--border-light)' }}>
+                <div className={`status-step ${step >= 1 ? (step > 1 ? 'done' : 'active') : ''}`}>
+                  {step > 1 ? <CheckCircle2 size={18} /> : (step === 1 ? <Loader2 size={18} className="spin" /> : <div style={{width: 18}}/>)}
+                  1. Deploy AI Agent lên Ritual Testnet.
+                </div>
+                <div className={`status-step ${step >= 2 ? (step > 2 ? 'done' : 'active') : ''}`}>
+                  {step > 2 ? <CheckCircle2 size={18} /> : (step === 2 ? <Loader2 size={18} className="spin" /> : <div style={{width: 18}}/>)}
+                  2. Mint token theo tokenomics chuẩn.
+                </div>
+                <div className={`status-step ${step >= 3 ? (step > 3 ? 'done' : 'active') : ''}`}>
+                  {step > 3 ? <CheckCircle2 size={18} /> : (step === 3 ? <Loader2 size={18} className="spin" /> : <div style={{width: 18}}/>)}
+                  3. Khóa phần token của creator theo vesting.
+                </div>
+                <div className={`status-step ${step >= 4 ? (step > 4 ? 'done' : 'active') : ''}`}>
+                  {step > 4 ? <CheckCircle2 size={18} /> : (step === 4 ? <Loader2 size={18} className="spin" /> : <div style={{width: 18}}/>)}
+                  4. Thêm thanh khoản sau khi hoàn tất presale.
+                </div>
+                <div className={`status-step ${step >= 5 ? (step > 5 ? 'done' : 'active') : ''}`}>
+                  {step > 5 ? <CheckCircle2 size={18} /> : (step === 5 ? <Loader2 size={18} className="spin" /> : <div style={{width: 18}}/>)}
+                  5. Khóa LP.
+                </div>
+                <div className={`status-step ${step >= 6 ? (step > 6 ? 'done' : 'active') : ''}`}>
+                  {step > 6 ? <CheckCircle2 size={18} /> : (step === 6 ? <Loader2 size={18} className="spin" /> : <div style={{width: 18}}/>)}
+                  6. Cho phép người dùng claim token.
+                </div>
+              </div>
+            )}
           </div>
-        )}
+
+          <div className="tokenomics-info" style={{ flex: '1 1 300px', textAlign: 'left', padding: '32px', background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05))', borderRadius: '24px', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
+            <h3 style={{ marginBottom: '24px', fontSize: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--brand-primary)' }}>
+              <ShieldCheck size={24} /> Chuẩn AI Token trên Ritual
+            </h3>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '24px', lineHeight: 1.6 }}>
+              Thay vì mỗi AI Agent có một tokenomics khác nhau, mọi agent đều tuân theo một chuẩn chung nhằm bảo vệ người dùng và xây dựng một hệ sinh thái bền vững.
+            </p>
+            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <li style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                <CheckCircle2 size={20} color="var(--brand-primary)" style={{ flexShrink: 0, marginTop: '2px' }} />
+                <span>Người dùng biết trước creator không thể giữ quá nhiều token.</span>
+              </li>
+              <li style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                <CheckCircle2 size={20} color="var(--brand-primary)" style={{ flexShrink: 0, marginTop: '2px' }} />
+                <span>AI Agent nào cũng có mức thanh khoản tối thiểu.</span>
+              </li>
+              <li style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                <CheckCircle2 size={20} color="var(--brand-primary)" style={{ flexShrink: 0, marginTop: '2px' }} />
+                <span>Giảm rủi ro "rug pull" do LP đã bị khóa tự động.</span>
+              </li>
+              <li style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                <CheckCircle2 size={20} color="var(--brand-primary)" style={{ flexShrink: 0, marginTop: '2px' }} />
+                <span>Dễ so sánh và đánh giá giữa các AI Agent nhờ tính nhất quán.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
       </section>
 
       {/* Trust Banner */}
