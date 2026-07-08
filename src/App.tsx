@@ -38,6 +38,7 @@ function App() {
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const [walletBalance, setWalletBalance] = useState<string | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
+  const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
 
   const [selectedToken, setSelectedToken] = useState<TokenIdea | null>(null);
   const [isTrading, setIsTrading] = useState(false);
@@ -205,8 +206,7 @@ function App() {
 
   const handleWalletClick = () => {
     if (walletAddress) {
-      setWalletAddress(null);
-      setWalletBalance(null);
+      setIsWalletModalOpen(true);
     } else {
       connectWallet();
     }
@@ -704,6 +704,67 @@ function App() {
             <div className="trade-fee-notice">
               Network Fee: 0.001 RITUAL per transaction
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Wallet Profile Modal */}
+      {isWalletModalOpen && walletAddress && (
+        <div className="modal-overlay" onClick={() => setIsWalletModalOpen(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '400px' }}>
+            <button className="modal-close" onClick={() => setIsWalletModalOpen(false)}>
+              <X size={24} />
+            </button>
+            
+            <div className="trade-header" style={{ marginBottom: '24px' }}>
+              <div className="trade-avatar" style={{ backgroundColor: 'var(--brand-primary)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <User size={32} />
+              </div>
+              <div>
+                <div className="trade-title">Your Profile</div>
+                <div className="trade-ticker" style={{ fontSize: '0.9rem', wordBreak: 'break-all' }}>{walletAddress}</div>
+              </div>
+            </div>
+
+            <div style={{ background: 'var(--surface-color)', padding: '16px', borderRadius: '12px', marginBottom: '24px', border: '1px solid var(--border-light)' }}>
+              <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '8px' }}>RITUAL Balance</div>
+              <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--brand-primary)' }}>
+                {walletBalance ? Number(walletBalance).toFixed(4) : '0.00'} <span style={{ fontSize: '1.2rem', color: 'var(--text-secondary)' }}>RITUAL</span>
+              </div>
+            </div>
+
+            {Object.keys(tokenBalances).some(k => tokenBalances[k] > 0) && (
+              <div style={{ marginBottom: '24px' }}>
+                <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '12px', fontWeight: 600 }}>Your Agents</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {Object.entries(tokenBalances).map(([id, balance]) => {
+                    if (balance <= 0) return null;
+                    const t = [...myTokens, ...trendingTokens].find(x => x.id === id);
+                    if (!t) return null;
+                    return (
+                      <div key={id} style={{ display: 'flex', justifyContent: 'space-between', padding: '12px', background: 'var(--surface-color)', borderRadius: '8px', border: '1px solid var(--border-light)' }}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600 }}>
+                          <span style={{ fontSize: '1.2rem' }}>{t.icon}</span> {t.ticker}
+                        </span>
+                        <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{balance}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            <button 
+              className="btn-primary" 
+              style={{ width: '100%', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.2)' }}
+              onClick={() => {
+                setWalletAddress(null);
+                setWalletBalance(null);
+                setIsWalletModalOpen(false);
+              }}
+            >
+              Disconnect Wallet
+            </button>
           </div>
         </div>
       )}
