@@ -9,7 +9,9 @@ const FACTORY_ABI = [
   "event AgentLaunched(address indexed tokenAddress, address indexed creator, string name, string ticker, uint256 indexed agentIndex, uint256 timestamp)"
 ];
 
-const FACTORY_ADDRESS = import.meta.env.VITE_FACTORY_ADDRESS || null;
+// RitualForgeFactory deployed on Ritual Testnet (Chain ID 1979)
+// Contract: https://explorer.ritualfoundation.org/address/0x02a5d02B1Db553E79da1Cb3F63bE2159fA369D23
+const FACTORY_ADDRESS = import.meta.env.VITE_FACTORY_ADDRESS || "0x02a5d02B1Db553E79da1Cb3F63bE2159fA369D23";
 const LAUNCH_FEE = parseEther("0.001"); // 0.001 RITUAL
 
 const SocialIcons = () => (
