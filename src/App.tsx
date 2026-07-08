@@ -23,6 +23,7 @@ interface TokenIdea {
   change: string;
   icon: string;
   color: string;
+  creator: string;
 }
 
 interface UserProfile {
@@ -33,10 +34,10 @@ interface UserProfile {
 }
 
 const trendingTokens: TokenIdea[] = [
-  { id: '1', name: 'Neural Doge', ticker: '$NDOGE', marketCap: '$1.2M', volume: '$340K', trustScore: 92, change: '+142%', icon: '🐕', color: '#fef08a' },
-  { id: '2', name: 'Sentient Cat', ticker: '$SCAT', marketCap: '$840K', volume: '$120K', trustScore: 88, change: '+85%', icon: '🐱', color: '#fbcfe8' },
-  { id: '3', name: 'Quantum Frog', ticker: '$QFROG', marketCap: '$2.1M', volume: '$950K', trustScore: 95, change: '+320%', icon: '🐸', color: '#bbf7d0' },
-  { id: '4', name: 'AI Penguin', ticker: '$PENG', marketCap: '$450K', volume: '$65K', trustScore: 78, change: '+42%', icon: '🐧', color: '#bae6fd' },
+  { id: '1', name: 'Neural Doge', ticker: '$NDOGE', marketCap: '$1.2M', volume: '$340K', trustScore: 92, change: '+142%', icon: '🐕', color: '#fef08a', creator: '0x1A2b...3C4d' },
+  { id: '2', name: 'Sentient Cat', ticker: '$SCAT', marketCap: '$840K', volume: '$120K', trustScore: 88, change: '+85%', icon: '🐱', color: '#fbcfe8', creator: '0xDead...BeeF' },
+  { id: '3', name: 'Quantum Frog', ticker: '$QFROG', marketCap: '$2.1M', volume: '$950K', trustScore: 95, change: '+320%', icon: '🐸', color: '#bbf7d0', creator: '0xC0ff...eE42' },
+  { id: '4', name: 'AI Penguin', ticker: '$PENG', marketCap: '$450K', volume: '$65K', trustScore: 78, change: '+42%', icon: '🐧', color: '#bae6fd', creator: '0xFace...B00C' },
 ];
 
 function App() {
@@ -314,6 +315,9 @@ function App() {
       setTimeout(() => {
         setStep(7);
         setIsGenerating(false);
+        const creatorAddr = walletAddress
+          ? `${walletAddress.substring(0, 6)}...${walletAddress.substring(walletAddress.length - 4)}`
+          : 'Anonymous';
         const newToken: TokenIdea = {
           id: Date.now().toString(),
           name: agentName,
@@ -323,7 +327,8 @@ function App() {
           trustScore: 99,
           change: "+0.00%",
           icon: "🚀",
-          color: "rgba(59, 130, 246, 0.2)"
+          color: "rgba(59, 130, 246, 0.2)",
+          creator: creatorAddr
         };
         setMyTokens([newToken, ...myTokens]);
         alert(`Token Deployed Successfully! Paid 0.001 RITUAL fee.\nTransaction Hash: ${tx.hash}`);
@@ -667,6 +672,7 @@ function App() {
                     <div>
                       <div className="token-name">{token.name}</div>
                       <div className="token-ticker">{token.ticker}</div>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '2px' }}>By: {token.creator}</div>
                     </div>
                     <div style={{ marginLeft: 'auto' }}>
                       <ArrowUpRight size={20} color="var(--text-secondary)" />
@@ -711,6 +717,7 @@ function App() {
                   <div>
                     <div className="token-name">{token.name}</div>
                     <div className="token-ticker">{token.ticker}</div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '2px' }}>By: {token.creator}</div>
                   </div>
                   <div style={{ marginLeft: 'auto' }}>
                     <ArrowUpRight size={20} color="var(--text-secondary)" />
@@ -925,6 +932,7 @@ function App() {
                 <thead>
                   <tr style={{ borderBottom: '1px solid var(--border-light)', color: 'var(--text-secondary)' }}>
                     <th style={{ padding: '12px', fontWeight: 500 }}>Agent</th>
+                    <th style={{ padding: '12px', fontWeight: 500 }}>Creator</th>
                     <th style={{ padding: '12px', fontWeight: 500 }}>Market Cap</th>
                     <th style={{ padding: '12px', fontWeight: 500 }}>Volume (24h)</th>
                     <th style={{ padding: '12px', fontWeight: 500 }}>Trust Score</th>
@@ -941,6 +949,9 @@ function App() {
                           <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{token.name}</div>
                           <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{token.ticker}</div>
                         </div>
+                      </td>
+                      <td style={{ padding: '16px 12px' }}>
+                        <span style={{ fontFamily: 'monospace', fontSize: '0.85rem', color: 'var(--brand-primary)', background: 'rgba(59,130,246,0.08)', padding: '3px 8px', borderRadius: '6px' }}>{token.creator}</span>
                       </td>
                       <td style={{ padding: '16px 12px', fontWeight: 600 }}>{token.marketCap}</td>
                       <td style={{ padding: '16px 12px', color: 'var(--text-secondary)' }}>{token.volume}</td>
