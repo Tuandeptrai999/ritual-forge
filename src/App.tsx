@@ -314,6 +314,11 @@ function App() {
           <span onClick={() => document.getElementById('explore')?.scrollIntoView({ behavior: 'smooth' })}>Explore</span>
           <span onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}>Features</span>
           <span onClick={() => document.getElementById('roadmap')?.scrollIntoView({ behavior: 'smooth' })}>Roadmap</span>
+          {myTokens.length > 0 && (
+            <span onClick={() => document.getElementById('my-tokens')?.scrollIntoView({ behavior: 'smooth' })}>Live Agents</span>
+          )}
+        </div>
+        <div className="nav-actions" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <button 
             className="theme-toggle" 
             onClick={() => setIsDarkMode(!isDarkMode)}
@@ -321,10 +326,10 @@ function App() {
           >
             {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
           </button>
+          <button className="btn-primary" onClick={handleWalletClick} disabled={isConnecting}>
+            {isConnecting ? 'Connecting...' : walletAddress ? truncateWallet(walletAddress) : 'Connect Wallet'}
+          </button>
         </div>
-        <button className="btn-primary" onClick={handleWalletClick} disabled={isConnecting}>
-          {isConnecting ? 'Connecting...' : walletAddress ? truncateWallet(walletAddress) : 'Connect Wallet'}
-        </button>
       </nav>
 
       <section className="hero">
