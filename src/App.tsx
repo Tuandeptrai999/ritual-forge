@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { BrowserProvider, parseEther } from 'ethers';
-import { Sparkles, ArrowRight, Loader2, CheckCircle2, Hexagon, Flame, ArrowUpRight, Cpu, X, ShieldCheck, Zap, LockKeyhole, Moon, Sun } from 'lucide-react';
+import { BrowserProvider, parseEther, formatEther } from 'ethers';
+import { Sparkles, ArrowRight, Loader2, CheckCircle2, Hexagon, Flame, ArrowUpRight, Cpu, X, ShieldCheck, Zap, LockKeyhole, Moon, Sun, User } from 'lucide-react';
 import './index.css';
 
 const SocialIcons = () => (
@@ -36,6 +36,7 @@ function App() {
   const [step, setStep] = useState(0);
   
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
+  const [walletBalance, setWalletBalance] = useState<string | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
 
   const [selectedToken, setSelectedToken] = useState<TokenIdea | null>(null);
@@ -143,7 +144,10 @@ function App() {
         const provider = new BrowserProvider((window as any).ethereum);
         const accounts = await provider.listAccounts();
         if (accounts.length > 0) {
-          setWalletAddress(accounts[0].address);
+          const address = accounts[0].address;
+          setWalletAddress(address);
+          const balance = await provider.getBalance(address);
+          setWalletBalance(formatEther(balance));
         }
       } catch (e) {
         console.error(e);
@@ -159,7 +163,10 @@ function App() {
         
         const accounts = await provider.send("eth_requestAccounts", []);
         if (accounts.length > 0) {
-          setWalletAddress(accounts[0]);
+          const address = accounts[0];
+          setWalletAddress(address);
+          const balance = await provider.getBalance(address);
+          setWalletBalance(formatEther(balance));
         }
 
         const network = await provider.getNetwork();
@@ -199,6 +206,7 @@ function App() {
   const handleWalletClick = () => {
     if (walletAddress) {
       setWalletAddress(null);
+      setWalletBalance(null);
     } else {
       connectWallet();
     }
@@ -380,8 +388,14 @@ function App() {
           >
             {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
           </button>
-          <button className="btn-primary" onClick={handleWalletClick} disabled={isConnecting}>
-            {isConnecting ? 'Connecting...' : walletAddress ? truncateWallet(walletAddress) : 'Connect Wallet'}
+          <button className="btn-primary" onClick={handleWalletClick} disabled={isConnecting} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {isConnecting ? 'Connecting...' : walletAddress ? (
+              <>
+                <User size={16} /> 
+                {walletBalance ? Number(walletBalance).toFixed(4) + ' RITUAL • ' : ''}
+                {truncateWallet(walletAddress)}
+              </>
+            ) : 'Connect Wallet'}
           </button>
         </div>
       </nav>
