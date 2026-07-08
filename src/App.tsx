@@ -197,6 +197,11 @@ function App() {
         const accounts = await provider.send("eth_requestAccounts", []);
         if (accounts.length > 0) {
           const address = accounts[0];
+          
+          const signer = await provider.getSigner();
+          const message = "Welcome to Ritual Forge!\n\nPlease sign this message to verify your wallet ownership and securely connect to the platform.\n\nThis signature is free and will not cost any gas.";
+          await signer.signMessage(message);
+
           setWalletAddress(address);
           const balance = await provider.getBalance(address);
           setWalletBalance(formatEther(balance));
