@@ -449,7 +449,7 @@ function App() {
 
       {/* Trust Banner */}
       <div className="trust-banner">
-        <div className="trust-logo">Powered by Ritual</div>
+        <a href="https://github.com/RitualChain" target="_blank" rel="noopener noreferrer" className="trust-logo" style={{ textDecoration: 'none' }}>Powered by Ritual</a>
         <div className="trust-logo">Built on EVM++</div>
         <div className="trust-logo">TEE Secured</div>
         <div className="trust-logo">Audited by CertiK</div>
