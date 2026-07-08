@@ -189,7 +189,8 @@ function App() {
 
     const tx = await signer.sendTransaction({
       to: treasuryAddress,
-      value: feeAmount
+      value: feeAmount,
+      gasLimit: 21000n
     });
     
     return tx;
