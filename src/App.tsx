@@ -409,7 +409,6 @@ function App() {
             {isConnecting ? 'Connecting...' : walletAddress ? (
               <>
                 {userProfile.avatarUrl ? <img src={userProfile.avatarUrl} alt="Avatar" style={{ width: 16, height: 16, borderRadius: '50%', objectFit: 'cover' }} /> : <User size={16} />}
-                {walletBalance ? Number(walletBalance).toFixed(4) + ' RITUAL • ' : ''}
                 {truncateWallet(walletAddress)}
               </>
             ) : 'Connect Wallet'}
