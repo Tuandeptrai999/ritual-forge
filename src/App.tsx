@@ -3,9 +3,11 @@ import { BrowserProvider, parseEther, formatEther, Contract } from 'ethers';
 import { Sparkles, ArrowRight, Loader2, CheckCircle2, Hexagon, Flame, ArrowUpRight, Cpu, X, ShieldCheck, Zap, LockKeyhole, User, Edit2, Save, Upload, Rocket } from 'lucide-react';
 import './index.css';
 
-// RitualForgeFactory ABI (minimal — only launchAgent)
+// RitualForgeFactory ABI (includes totalAgents and events)
 const FACTORY_ABI = [
   "function launchAgent(string calldata _name, string calldata _ticker, string calldata _prompt, string calldata _marketCap) external payable returns (address)",
+  "function totalAgents() external view returns (uint256)",
+  "function allAgents(uint256) external view returns (address, address, string, string, string, string, uint256)",
   "event AgentLaunched(address indexed tokenAddress, address indexed creator, string name, string ticker, uint256 indexed agentIndex, uint256 timestamp)"
 ];
 
@@ -173,12 +175,98 @@ function App() {
       }
     };
 
+
     window.addEventListener('mousemove', handleMouseMove);
+
+    // --- On-Chain Integration ---
+    let factoryContract: Contract | null = null;
+    
+    if (FACTORY_ADDRESS && (window as any).ethereum) {
+      const provider = new BrowserProvider((window as any).ethereum);
+      factoryContract = new Contract(FACTORY_ADDRESS, FACTORY_ABI, provider);
+
+      // Fetch existing tokens from chain on mount
+      const fetchHistorical = async () => {
+        try {
+          const total = await factoryContract!.totalAgents();
+          const totalNum = Number(total);
+          
+          if (totalNum > 0) {
+            const fetchedTokens: TokenIdea[] = [];
+            // Fetch the last 10 tokens (or all if < 10)
+            const start = Math.max(0, totalNum - 10);
+            
+            for(let i = totalNum - 1; i >= start; i--) {
+               const agentData = await factoryContract!.allAgents(i);
+               const tokenAddr = agentData[0];
+               const creatorAddr = agentData[1];
+               const name = agentData[2];
+               const ticker = agentData[3];
+               // agentData[4] is prompt
+               const mcap = agentData[5];
+               
+               const creatorShort = `${creatorAddr.substring(0, 6)}...${creatorAddr.substring(creatorAddr.length - 4)}`;
+               
+               fetchedTokens.push({
+                 id: tokenAddr,
+                 name,
+                 ticker,
+                 marketCap: mcap || "$10k",
+                 volume: "$0",
+                 trustScore: 99,
+                 change: "+0.00%",
+                 icon: "🤖",
+                 color: "rgba(59, 130, 246, 0.2)",
+                 creator: creatorShort
+               });
+            }
+            
+            setMyTokens(prev => {
+              // Merge, avoiding duplicates
+              const map = new Map(prev.map(p => [p.id, p]));
+              fetchedTokens.forEach(t => map.set(t.id, t));
+              return Array.from(map.values());
+            });
+          }
+        } catch (e) {
+          console.error("Failed to fetch historical tokens:", e);
+        }
+      };
+
+      const onAgentLaunched = (tokenAddress: string, creator: string, name: string, ticker: string, _agentIndex: bigint, _timestamp: bigint) => {
+        const creatorShort = `${creator.substring(0, 6)}...${creator.substring(creator.length - 4)}`;
+        const newToken: TokenIdea = {
+          id: tokenAddress,
+          name,
+          ticker,
+          marketCap: "$10k",
+          volume: "$0",
+          trustScore: 99,
+          change: "+0.00%",
+          icon: "🚀",
+          color: "rgba(16, 185, 129, 0.2)",
+          creator: creatorShort
+        };
+
+        setMyTokens(prev => {
+          if (prev.some(t => t.id === newToken.id)) return prev;
+          return [newToken, ...prev];
+        });
+      };
+
+      factoryContract.on("AgentLaunched", onAgentLaunched);
+      fetchHistorical();
+    }
+
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       cancelAnimationFrame(animationFrameId);
+      if (factoryContract) {
+         factoryContract.removeAllListeners("AgentLaunched");
+      }
     };
   }, []);
+
 
   const checkConnection = async () => {
     if (typeof (window as any).ethereum !== 'undefined') {
@@ -347,19 +435,7 @@ function App() {
         setTimeout(() => {
           setStep(7);
           setIsGenerating(false);
-          const newToken: TokenIdea = {
-            id: Date.now().toString(),
-            name: agentName,
-            ticker: ticker.toUpperCase(),
-            marketCap: initialMarketCap,
-            volume: "$0",
-            trustScore: 99,
-            change: "+0.00%",
-            icon: "🚀",
-            color: "rgba(59, 130, 246, 0.2)",
-            creator: creatorShort
-          };
-          setMyTokens([newToken, ...myTokens]);
+          // Wait for on-chain event to update the UI
           alert(`✅ Token Deployed On-Chain!\n\nAgent: ${agentName} (${ticker.toUpperCase()})\nTx: ${txHash}\n\nView on Explorer:\nhttps://explorer.ritualfoundation.org/tx/${txHash}`);
           setAgentName('');
           setTicker('');
